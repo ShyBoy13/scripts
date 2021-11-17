@@ -1,0 +1,87 @@
+#!/usr/bin/python3
+import argparse, os, sys
+
+html_template = """<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>{0}</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="{1}">
+    <script defer src="{2}"></script>
+  </head>
+<body>
+  <!-- your content here... -->
+</body>
+</html>
+"""
+sass_rules = """*
+  box-sizing: border-box
+  margin: 0
+  padding: 0
+
+html, body
+  width: 100%
+  height: 100%
+"""
+
+scss_rules = """* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%
+};
+"""
+
+parser = argparse.ArgumentParser()
+parser.add_argument("project", help="Project name")
+parser.add_argument("--sass", choices=["scss", "sass"], help="Generates files for sass preprossesor")
+
+args = parser.parse_args()
+
+if args.project:
+  try:
+    os.mkdir(args.project) 
+  except FileExistsError:
+    print("Directory already exist")
+    sys.exit(2)
+  else:
+    os.chdir(args.project)
+    os.mkdir("styles")
+    os.mkdir("js")
+
+    file = open("index.html", "w")
+    file.write(html_template.format(args.project, "styles/" + args.project + ".css", "js/" + args.project + ".js"))
+    file.close()
+
+    file = open("js/{0}.js".format(args.project), "x")
+    file.close()
+
+    if args.sass == "sass":
+      print("Using sass with .sass file extension")
+      os.mkdir(args.sass)
+      os.chdir(args.sass)
+      file = open("{0}.{1}".format(args.project, args.sass), "w")
+      file.write(sass_rules)
+      file.close()
+
+    elif args.sass == "scss":
+      print("Using sass with .scss file extension")
+      os.mkdir(args.sass)
+      os.chdir(args.sass)
+      file = open("{0}.{1}".format(args.project, args.sass), "w")
+      file.write(scss_rules)
+      file.close()
+
+    print("Project created succesfully")
+
+
+
+
